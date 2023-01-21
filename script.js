@@ -40,20 +40,33 @@ function operatorClickCB(e, container, display) {
     let opButtons = Array.from(container.children);
     opButtons.forEach((n)=>n.classList.remove("highlight"));
     e.target.classList.add("highlight");
-        // Set up operands
+    // Set up operands
     if (isNaN(leftOperand)) {
         leftOperand = currentNumber;
         operator = e.target.value;
         currentNumber = NaN;
     } else {
-        // If pressing "=" without entering a number: repeating an operation
-        if (e.target.value === "=" && currentNumber === NaN) {
+        // If pressing operator without entering a number
+        if (isNaN(currentNumber)) {
+            // If "=": repeating an operation
+            if (e.target.value === "=") {
+                leftOperand = operate(operator, leftOperand, rightOperand);
+                display.textContent = leftOperand;
+                currentNumber = NaN;
+            } 
+            // Switching operators
+            else { 
+                operator = e.target.value;
+            }
 
         } else { // Normal operation
             rightOperand = currentNumber;
             leftOperand = operate(operator, leftOperand, rightOperand);
             display.textContent = leftOperand;
             currentNumber = NaN;
+            if (e.target.value !== "="){
+                operator = e.target.value;
+            }
         }
     }
 
