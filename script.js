@@ -1,6 +1,6 @@
 const MAX_TEXT_LENGTH = 20;
 var currentNumber = NaN;
-var leftOperand = 0;
+var leftOperand = NaN;
 var rightOperand = NaN;
 var result = NaN;
 var operator = null;
@@ -28,18 +28,41 @@ function operate(op, x, y) {
             return multiply(x, y);
         case "/":
             return divide(x, y);
+        case null:
+            return x;
         default:
             alert("Invalid operator!");
     }
 }
 
-function operatorClickCB() {
+function operatorClickCB(e, container, display) {
+    // Clear highlighted buttons.
+    let opButtons = Array.from(container.children);
+    opButtons.forEach((n)=>n.classList.remove("highlight"));
+    e.target.classList.add("highlight");
+        // Set up operands
+    if (isNaN(leftOperand)) {
+        leftOperand = currentNumber;
+        operator = e.target.value;
+        currentNumber = NaN;
+    } else {
+        // If pressing "=" without entering a number: repeating an operation
+        if (e.target.value === "=" && currentNumber === NaN) {
+
+        } else { // Normal operation
+            rightOperand = currentNumber;
+            leftOperand = operate(operator, leftOperand, rightOperand);
+            display.textContent = leftOperand;
+            currentNumber = NaN;
+        }
+    }
+
     
 }
 
 function numberClickCB(e, display) {
-    if (rightOperand === NaN) {
-        rightOperand = 0;
+    if (isNaN(currentNumber)) {
+        currentNumber = 0;
     }
     if (display.textContent.length <= MAX_TEXT_LENGTH) {
         currentNumber = currentNumber * 10 + +e.target.value;
@@ -47,14 +70,24 @@ function numberClickCB(e, display) {
     }
 }
 
+function clearClickCB(display) {
+    currentNumber = NaN;
+    leftOperand = NaN;
+    rightOperand = NaN;
+    result = NaN;
+    operator = null;
+    display.textContent = 0;
+}
+
 
 /* --------- main --------- */
 const displayh1 = document.querySelector(".display h1");
 const numbersContainer = document.querySelector(".numbers");
 const operatorContainer = document.querySelector(".operators");
+const clearButton = document.querySelector("#clear");
 numbersContainer.childNodes.forEach((n) => n.addEventListener("click", (x)=>numberClickCB(x, displayh1)));
-operatorContainer.childNodes.forEach((n) => n.addEventListener("click", (x)=>operatorClickCB))
-
+operatorContainer.childNodes.forEach((n) => n.addEventListener("click", (x)=>operatorClickCB(x, operatorContainer, displayh1)))
+clearButton.addEventListener("click", ()=>clearClickCB(displayh1));
 
 
 

@@ -16,7 +16,7 @@ body {
     border: 0.1em solid lightgray;
     background-color: lightcyan;
     justify-content: flex-end;
-    height: fit-content;
+    height: 5em;
     grid-column: 1 / -1;
 }
 .display > * {
@@ -48,10 +48,16 @@ body {
     display: flex;
     flex-direction: column;
     align-content: stretch;
+    box-sizing: border-box;
 }
 .operators button {
     flex: 1;
 }
 .operators button:last-child {
     flex: 2;
+}
+.highlight {
+    font-weight: bold;
+    border-color: blue;
+    border-radius: 5px;
 }
