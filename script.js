@@ -43,9 +43,12 @@ function operatorClickCB(e, container, display) {
     e.target.classList.add("highlight");
     // Set up operands
     if (isNaN(leftOperand)) {
-        leftOperand = isNaN(currentNumber) ? 0 : currentNumber;
-        operator = e.target.value;
-        currentNumber = NaN;
+        if (e.target.value !== "="){
+            leftOperand = isNaN(currentNumber) ? 0 : currentNumber;
+            operator = e.target.value;
+            currentNumber = NaN;
+            savedOperator = operator;
+        }
     } else {
         // Special Case: Divide by zero Snark
         if (operator == "/" && currentNumber == 0) {
@@ -56,7 +59,7 @@ function operatorClickCB(e, container, display) {
         // If pressing operator without entering a number
         if (isNaN(currentNumber)) {
             // If "=": repeating an operation
-            if (e.target.value === "=") {
+            if (e.target.value === "=" && !isNaN(rightOperand)) {
                 result = operate(savedOperator, leftOperand, rightOperand);
                 display.textContent = result;
                 leftOperand = result;
@@ -91,10 +94,10 @@ function numberClickCB(e, display) {
         }
         currentNumber = 0;
     }
-    if (display.textContent.length <= MAX_TEXT_LENGTH) {
+    //if (display.textContent.length <= MAX_TEXT_LENGTH) {
         currentNumber = currentNumber * 10 + +e.target.value;
         display.textContent = currentNumber;
-    }
+    //}
 }
 
 function clear() {
@@ -103,6 +106,7 @@ function clear() {
     rightOperand = NaN;
     result = NaN;
     operator = null;
+    savedOperator = null;
 }
 function clearClickCB(display, operatorContainer) {
     clear();
