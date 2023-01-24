@@ -13,6 +13,7 @@ body {
 
 .display {
     display: flex;
+    max-width: inherit;
     border: 0.1em solid lightgray;
     background-color: lightcyan;
     justify-content: flex-end;
@@ -52,6 +53,11 @@ body {
 }
 .operators button {
     flex: 1;
+    background-color: #e4f2f7;
+    border-radius: 5px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: grey;
 }
 .operators button:last-child {
     flex: 2;

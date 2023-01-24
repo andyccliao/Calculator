@@ -4,6 +4,7 @@ var leftOperand = NaN;
 var rightOperand = NaN;
 var result = NaN;
 var operator = null;
+var savedOperator = null;
 
 function add(x, y) {
     return x + y;
@@ -28,7 +29,7 @@ function operate(op, x, y) {
             return multiply(x, y);
         case "/":
             return divide(x, y);
-        case null:
+        case "null":
             return x;
         default:
             alert("Invalid operator!");
@@ -42,16 +43,23 @@ function operatorClickCB(e, container, display) {
     e.target.classList.add("highlight");
     // Set up operands
     if (isNaN(leftOperand)) {
-        leftOperand = currentNumber;
+        leftOperand = isNaN(currentNumber) ? 0 : currentNumber;
         operator = e.target.value;
         currentNumber = NaN;
     } else {
+        // Special Case: Divide by zero Snark
+        if (operator == "/" && currentNumber == 0) {
+            clear();
+            display.textContent = "Divide by Zero? Aiyahhh"
+            return;
+        }
         // If pressing operator without entering a number
         if (isNaN(currentNumber)) {
             // If "=": repeating an operation
             if (e.target.value === "=") {
-                leftOperand = operate(operator, leftOperand, rightOperand);
-                display.textContent = leftOperand;
+                result = operate(savedOperator, leftOperand, rightOperand);
+                display.textContent = result;
+                leftOperand = result;
                 currentNumber = NaN;
             } 
             // Switching operators
@@ -61,20 +69,26 @@ function operatorClickCB(e, container, display) {
 
         } else { // Normal operation
             rightOperand = currentNumber;
-            leftOperand = operate(operator, leftOperand, rightOperand);
-            display.textContent = leftOperand;
+            result = operate(operator, leftOperand, rightOperand);
+            display.textContent = result;
+            leftOperand = result;
             currentNumber = NaN;
             if (e.target.value !== "="){
                 operator = e.target.value;
+                savedOperator = operator;
             }
+            else {
+                operator = null;
+            };
         }
-    }
-
-    
+    }    
 }
 
 function numberClickCB(e, display) {
     if (isNaN(currentNumber)) {
+        if (!operator) {
+            clear();
+        }
         currentNumber = 0;
     }
     if (display.textContent.length <= MAX_TEXT_LENGTH) {
@@ -83,12 +97,15 @@ function numberClickCB(e, display) {
     }
 }
 
-function clearClickCB(display) {
+function clear() {
     currentNumber = NaN;
     leftOperand = NaN;
     rightOperand = NaN;
     result = NaN;
     operator = null;
+}
+function clearClickCB(display) {
+    clear();
     display.textContent = 0;
 }
 
