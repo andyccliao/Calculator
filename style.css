@@ -62,7 +62,7 @@ body {
 .operators button:last-child {
     flex: 2;
 }
-.highlight {
+.operators button.highlight {
     font-weight: bold;
     border-color: blue;
     border-radius: 5px;
