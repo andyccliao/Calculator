@@ -104,9 +104,11 @@ function clear() {
     result = NaN;
     operator = null;
 }
-function clearClickCB(display) {
+function clearClickCB(display, operatorContainer) {
     clear();
     display.textContent = 0;
+    let opButtons = Array.from(operatorContainer.children);
+    opButtons.forEach((n)=>n.classList.remove("highlight"));
 }
 
 
@@ -117,7 +119,7 @@ const operatorContainer = document.querySelector(".operators");
 const clearButton = document.querySelector("#clear");
 numbersContainer.childNodes.forEach((n) => n.addEventListener("click", (x)=>numberClickCB(x, displayh1)));
 operatorContainer.childNodes.forEach((n) => n.addEventListener("click", (x)=>operatorClickCB(x, operatorContainer, displayh1)))
-clearButton.addEventListener("click", ()=>clearClickCB(displayh1));
+clearButton.addEventListener("click", ()=>clearClickCB(displayh1, operatorContainer));
 
 
 
