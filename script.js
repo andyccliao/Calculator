@@ -1,4 +1,5 @@
 const MAX_TEXT_LENGTH = 20;
+const PRECISION = 14;
 var currentNumber = NaN;
 var leftOperand = NaN;
 var rightOperand = NaN;
@@ -97,7 +98,10 @@ function numberClickCB(e, display) {
         decimalExp = 0;
     }
     if (e.target.value == ".") {
-        decimalExp -= 1;
+        if (decimalExp === 0) {
+            decimalExp -= 1;
+            updateDisplay(currentNumber, display);
+        }
         return;
     }
     if (decimalExp) {
@@ -111,8 +115,11 @@ function numberClickCB(e, display) {
     }
 }
 
-function updateDisplay(number, display, precision=15) {
-    display.textContent = Math.floor(number * (10 ** precision)) / (10 ** precision);    ;
+function updateDisplay(number, display, precision=PRECISION) {
+    display.textContent = Math.floor(number * (10 ** precision)) / (10 ** precision);
+    if (decimalExp !== 0 && Number.isSafeInteger(currentNumber)) {
+        display.textContent += ".";
+    }
 }
 
 function clear() {
@@ -131,15 +138,35 @@ function clearClickCB(display, operatorContainer) {
     opButtons.forEach((n)=>n.classList.remove("highlight"));
 }
 
+function backspaceClickCB(display) {
+    if (isNaN(currentNumber)) return;
+    if (currentNumber === 0) return;
+
+    if (decimalExp !== 0) {
+        decimalExp += (Number.isSafeInteger(currentNumber)) ? 1 : 2;
+        decimalExp = (decimalExp > 0) ? 0 : decimalExp;
+        currentNumber = currentNumber * (10**(-decimalExp));
+        currentNumber = Math.floor(currentNumber);
+        currentNumber = currentNumber * (10**decimalExp);
+    }
+    else {
+        currentNumber /= 10;
+        currentNumber = Math.floor(currentNumber);
+    }
+    updateDisplay(currentNumber, display);
+}
+
 
 /* --------- main --------- */
 const displayh1 = document.querySelector(".display h1");
 const numbersContainer = document.querySelector(".numbers");
 const operatorContainer = document.querySelector(".operators");
 const clearButton = document.querySelector("#clear");
+const backspaceButton = document.querySelector("#backspace");
 numbersContainer.childNodes.forEach((n) => n.addEventListener("click", (x)=>numberClickCB(x, displayh1)));
 operatorContainer.childNodes.forEach((n) => n.addEventListener("click", (x)=>operatorClickCB(x, operatorContainer, displayh1)))
 clearButton.addEventListener("click", ()=>clearClickCB(displayh1, operatorContainer));
+backspaceButton.addEventListener("click", ()=>backspaceClickCB(displayh1));
 
 
 
