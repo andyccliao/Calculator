@@ -126,7 +126,7 @@ function clear() {
 }
 function clearClickCB(display, operatorContainer) {
     clear();
-    display.textContent = 0;
+    updateDisplay(0, display);
     let opButtons = Array.from(operatorContainer.children);
     opButtons.forEach((n)=>n.classList.remove("highlight"));
 }
