@@ -5,6 +5,7 @@ var rightOperand = NaN;
 var result = NaN;
 var operator = null;
 var savedOperator = null;
+var decimalExp = 0;
 
 function add(x, y) {
     return x + y;
@@ -61,7 +62,7 @@ function operatorClickCB(e, container, display) {
             // If "=": repeating an operation
             if (e.target.value === "=" && !isNaN(rightOperand)) {
                 result = operate(savedOperator, leftOperand, rightOperand);
-                display.textContent = result;
+                updateDisplay(result, display);
                 leftOperand = result;
                 currentNumber = NaN;
             } 
@@ -73,7 +74,7 @@ function operatorClickCB(e, container, display) {
         } else { // Normal operation
             rightOperand = currentNumber;
             result = operate(operator, leftOperand, rightOperand);
-            display.textContent = result;
+            updateDisplay(result, display);
             leftOperand = result;
             currentNumber = NaN;
             if (e.target.value !== "="){
@@ -93,11 +94,25 @@ function numberClickCB(e, display) {
             clear();
         }
         currentNumber = 0;
+        decimalExp = 0;
     }
-    //if (display.textContent.length <= MAX_TEXT_LENGTH) {
+    if (e.target.value == ".") {
+        decimalExp -= 1;
+        return;
+    }
+    if (decimalExp) {
+        currentNumber = currentNumber + (+e.target.value * 10**decimalExp);
+        updateDisplay(currentNumber, display);
+        decimalExp -= 1;
+    }
+    else {
         currentNumber = currentNumber * 10 + +e.target.value;
-        display.textContent = currentNumber;
-    //}
+        updateDisplay(currentNumber, display);
+    }
+}
+
+function updateDisplay(number, display, precision=15) {
+    display.textContent = Math.floor(number * (10 ** precision)) / (10 ** precision);    ;
 }
 
 function clear() {
@@ -107,6 +122,7 @@ function clear() {
     result = NaN;
     operator = null;
     savedOperator = null;
+    decimalExp = 0;
 }
 function clearClickCB(display, operatorContainer) {
     clear();

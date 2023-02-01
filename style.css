@@ -1,6 +1,8 @@
 body {
     display: flex;
     justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 #calculatorBody {
     display: grid;
@@ -9,6 +11,9 @@ body {
     grid-template-rows: 2fr 1fr 6fr;
     grid-template-columns: 4fr 1fr;
     gap: 0.25em;
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 1em;
 }
 
 .display {
@@ -36,13 +41,12 @@ body {
     grid-template-rows: repeat(4, 1fr);
     grid-template-columns: repeat(3, 1fr);
     gap: 0.25em;
-    grid-col: 1 / span 1;
 }
-.numbers button {
-    ;
+.numbers button:nth-last-child(2) {
+    grid-column: span 2;
 }
 .numbers button:last-child {
-    grid-column: 1 / -1;
+    grid-column: 3 / -1;
 }
 
 .operators {
