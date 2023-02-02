@@ -83,6 +83,7 @@ function operatorClickCB(e, container, display) {
                 savedOperator = operator;
             }
             else {
+                savedOperator = operator;
                 operator = null;
             };
         }
