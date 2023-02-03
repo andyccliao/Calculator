@@ -39,15 +39,30 @@ function operate(op, x, y) {
 }
 
 function operatorClickCB(e, container, display) {
+    operatorClick(e.target.value, container, display);
+    e.target.classList.add("highlight");
+}
+function operatorClickKB(value, container, display) {
+    operatorClick(value, container, display);
+    var op;
+    switch(value) {
+        case "+": op = "addition"; break;
+        case "-": op = "subtraction"; break;
+        case "*": op = "multiplication"; break;
+        case "/": op = "division"; break;
+        case "=": op = "equals"; break;
+    }
+    document.getElementById(op).classList.add("highlight");
+}
+function operatorClick(value, container, display) {
     // Clear highlighted buttons.
     let opButtons = Array.from(container.children);
     opButtons.forEach((n)=>n.classList.remove("highlight"));
-    e.target.classList.add("highlight");
     // Set up operands
     if (isNaN(leftOperand)) {
-        if (e.target.value !== "="){
+        if (value !== "="){
             leftOperand = isNaN(currentNumber) ? 0 : currentNumber;
-            operator = e.target.value;
+            operator = value;
             currentNumber = NaN;
             savedOperator = operator;
         }
@@ -61,7 +76,7 @@ function operatorClickCB(e, container, display) {
         // If pressing operator without entering a number
         if (isNaN(currentNumber)) {
             // If "=": repeating an operation
-            if (e.target.value === "=" && !isNaN(rightOperand)) {
+            if (value === "=" && !isNaN(rightOperand)) {
                 result = operate(savedOperator, leftOperand, rightOperand);
                 updateDisplay(result, display);
                 leftOperand = result;
@@ -69,7 +84,7 @@ function operatorClickCB(e, container, display) {
             } 
             // Switching operators
             else { 
-                operator = e.target.value;
+                operator = value;
             }
 
         } else { // Normal operation
@@ -78,8 +93,8 @@ function operatorClickCB(e, container, display) {
             updateDisplay(result, display);
             leftOperand = result;
             currentNumber = NaN;
-            if (e.target.value !== "="){
-                operator = e.target.value;
+            if (value !== "="){
+                operator = value;
                 savedOperator = operator;
             }
             else {
@@ -91,6 +106,10 @@ function operatorClickCB(e, container, display) {
 }
 
 function numberClickCB(e, display) {
+    numberClick(e.target.value, display);
+}
+function numberClick(valueAsStr, display) {
+    // TODO: FIX HOW MANY DIGITS ALLOWED
     if (isNaN(currentNumber)) {
         if (!operator) {
             clear();
@@ -98,7 +117,7 @@ function numberClickCB(e, display) {
         currentNumber = 0;
         decimalExp = 0;
     }
-    if (e.target.value == ".") {
+    if (valueAsStr == ".") {
         if (decimalExp === 0) {
             decimalExp -= 1;
             updateDisplay(currentNumber, display);
@@ -106,12 +125,12 @@ function numberClickCB(e, display) {
         return;
     }
     if (decimalExp) {
-        currentNumber = currentNumber + (+e.target.value * 10**decimalExp);
+        currentNumber = currentNumber + (+valueAsStr * 10**decimalExp);
         updateDisplay(currentNumber, display);
         decimalExp -= 1;
     }
     else {
-        currentNumber = currentNumber * 10 + +e.target.value;
+        currentNumber = currentNumber * 10 + +valueAsStr;
         updateDisplay(currentNumber, display);
     }
 }
@@ -140,7 +159,11 @@ function clearClickCB(display, operatorContainer) {
 }
 
 function backspaceClickCB(display) {
-    if (isNaN(currentNumber)) return;
+    if (isNaN(currentNumber)) {
+        clear();
+        updateDisplay(0, display);
+        return;
+    }
     if (currentNumber === 0) return;
 
     if (decimalExp !== 0) {
@@ -157,6 +180,41 @@ function backspaceClickCB(display) {
     updateDisplay(currentNumber, display);
 }
 
+//https://www.freecodecamp.org/news/javascript-keycode-list-keypress-event-key-codes/
+function keydownCB(evnt, operatorContainer, display) {
+    evnt.preventDefault();
+    var key = evnt.key;
+    switch (key) {
+        case "0": case "1": case "2": case "3": case "4": 
+        case "5": case "6": case "7": case "8": case "9":
+            const numButton = document.getElementById(`number${key}`);
+            numButton.classList.add("highlight");
+            numberClick(key, display);
+            break;
+        case "+": case "-": case "*": case "/": case "=":
+            operatorClickKB(key, operatorContainer, display);
+            break;
+        case "Enter":
+            operatorClickKB("=", operatorContainer, display);
+            break;
+        case "Backspace":
+            backspaceClickCB(display);
+            break;
+        case "Delete":
+            clearClickCB(display, operatorContainer);
+            break
+        default:
+            break;
+    }
+}
+function keyUpCB(evnt, numbersContainer, operatorContainer, display) {
+    evnt.preventDefault();
+    var key = evnt.key;
+
+    let numButtons = Array.from(numbersContainer.children);
+    numButtons.forEach((n)=>n.classList.remove("highlight"));
+}
+
 
 /* --------- main --------- */
 const displayh1 = document.querySelector(".display h1");
@@ -169,6 +227,9 @@ operatorContainer.childNodes.forEach((n) => n.addEventListener("click", (x)=>ope
 clearButton.addEventListener("click", ()=>clearClickCB(displayh1, operatorContainer));
 backspaceButton.addEventListener("click", ()=>backspaceClickCB(displayh1));
 
+
+document.addEventListener("keydown", (x)=>keydownCB(x, operatorContainer, displayh1));
+document.addEventListener("keyup", (x)=>keyUpCB(x, numbersContainer, operatorContainer, displayh1));
 
 
 /*

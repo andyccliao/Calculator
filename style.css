@@ -70,6 +70,7 @@ body {
 .operators button:last-child {
     flex: 2;
 }
+.numbers button.highlight,
 .operators button.highlight {
     font-weight: bold;
     border-color: blue;
