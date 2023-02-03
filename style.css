@@ -37,7 +37,7 @@ body {
     justify-content: space-between;
 }
 .functions button {
-    min-width: 4em;
+    width: 5em;
 }
 
 .numbers {
@@ -58,6 +58,7 @@ body {
     flex-direction: column;
     align-content: stretch;
     box-sizing: border-box;
+    gap: 0.25em;
 }
 .operators button {
     flex: 1;
