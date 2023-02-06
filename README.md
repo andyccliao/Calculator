@@ -2,7 +2,7 @@
 
 An online calculator inspired by [The Odin Project](https://www.theodinproject.com/home)!
 
-[See it working live here!]()
+[See it working live here!](https://andyccliao.github.io/Calculator/)
 
 ## Features
 
