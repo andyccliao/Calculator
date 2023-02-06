@@ -1,6 +1,6 @@
 const MAX_TEXT_LENGTH = 20;
 const PRECISION = 14;
-var currentNumber = NaN;
+var currentNumber = "";
 var leftOperand = NaN;
 var rightOperand = NaN;
 var result = NaN;
@@ -61,26 +61,26 @@ function operatorClick(value, container, display) {
     // Set up operands
     if (isNaN(leftOperand)) {
         if (value !== "="){
-            leftOperand = isNaN(currentNumber) ? 0 : currentNumber;
+            leftOperand = (currentNumber == "") ? 0 : +currentNumber;
             operator = value;
-            currentNumber = NaN;
+            currentNumber = "";
             savedOperator = operator;
         }
     } else {
         // Special Case: Divide by zero Snark
-        if (operator == "/" && currentNumber == 0) {
+        if (operator == "/" && currentNumber == "0") {
             clear();
             display.textContent = "Divide by Zero? Aiyahhh"
             return;
         }
         // If pressing operator without entering a number
-        if (isNaN(currentNumber)) {
+        if (currentNumber == "") {
             // If "=": repeating an operation
             if (value === "=" && !isNaN(rightOperand)) {
                 result = operate(savedOperator, leftOperand, rightOperand);
                 updateDisplay(result, display);
                 leftOperand = result;
-                currentNumber = NaN;
+                currentNumber = "";
             } 
             // Switching operators
             else { 
@@ -88,11 +88,11 @@ function operatorClick(value, container, display) {
             }
 
         } else { // Normal operation
-            rightOperand = currentNumber;
+            rightOperand = +currentNumber;
             result = operate(operator, leftOperand, rightOperand);
             updateDisplay(result, display);
             leftOperand = result;
-            currentNumber = NaN;
+            currentNumber = "";
             if (value !== "="){
                 operator = value;
                 savedOperator = operator;
@@ -109,41 +109,39 @@ function numberClickCB(e, display) {
     numberClick(e.target.value, display);
 }
 function numberClick(valueAsStr, display) {
-    // TODO: FIX HOW MANY DIGITS ALLOWED
-    if (isNaN(currentNumber)) {
+    if (currentNumber.length >= PRECISION) return;
+    if (currentNumber == "") {
         if (!operator) {
             clear();
         }
-        currentNumber = 0;
+        currentNumber = "0";
         decimalExp = 0;
     }
     if (valueAsStr == ".") {
         if (decimalExp === 0) {
             decimalExp -= 1;
+            currentNumber = currentNumber + ".";
             updateDisplay(currentNumber, display);
         }
         return;
     }
     if (decimalExp) {
-        currentNumber = currentNumber + (+valueAsStr * 10**decimalExp);
-        updateDisplay(currentNumber, display);
         decimalExp -= 1;
     }
-    else {
-        currentNumber = currentNumber * 10 + +valueAsStr;
-        updateDisplay(currentNumber, display);
-    }
+    currentNumber = currentNumber + valueAsStr;
+    updateDisplay(currentNumber, display);
 }
 
 function updateDisplay(number, display, precision=PRECISION) {
-    display.textContent = Math.floor(number * (10 ** precision)) / (10 ** precision);
-    if (decimalExp !== 0 && Number.isSafeInteger(currentNumber)) {
+    let displayNumber = +number;
+    display.textContent = Math.floor(displayNumber * (10 ** precision)) / (10 ** precision);
+    if (decimalExp !== 0 && Number.isSafeInteger(+currentNumber)) {
         display.textContent += ".";
     }
 }
 
 function clear() {
-    currentNumber = NaN;
+    currentNumber = "";
     leftOperand = NaN;
     rightOperand = NaN;
     result = NaN;
@@ -159,23 +157,25 @@ function clearClickCB(display, operatorContainer) {
 }
 
 function backspaceClickCB(display) {
-    if (isNaN(currentNumber)) {
+    if (currentNumber === "") {
         clear();
         updateDisplay(0, display);
         return;
     }
-    if (currentNumber === 0) return;
+    if (currentNumber === "0") return;
 
     if (decimalExp !== 0) {
-        decimalExp += (Number.isSafeInteger(currentNumber)) ? 1 : 2;
-        decimalExp = (decimalExp > 0) ? 0 : decimalExp;
-        currentNumber = currentNumber * (10**(-decimalExp));
-        currentNumber = Math.floor(currentNumber);
-        currentNumber = currentNumber * (10**decimalExp);
+        if (decimalExp == -2) {
+            currentNumber = currentNumber.substring(0, currentNumber.length-2);
+            decimalExp += 2;
+        }
+        else {
+            currentNumber = currentNumber.substring(0, currentNumber.length-1);
+            decimalExp += 1;
+        }
     }
     else {
-        currentNumber /= 10;
-        currentNumber = Math.floor(currentNumber);
+        currentNumber = currentNumber.substring(0, currentNumber.length-1);
     }
     updateDisplay(currentNumber, display);
 }
