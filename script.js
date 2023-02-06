@@ -183,11 +183,17 @@ function backspaceClickCB(display) {
 //https://www.freecodecamp.org/news/javascript-keycode-list-keypress-event-key-codes/
 function keydownCB(evnt, operatorContainer, display) {
     evnt.preventDefault();
-    var key = evnt.key;
+    let key = evnt.key;
+    let numButton;
     switch (key) {
         case "0": case "1": case "2": case "3": case "4": 
         case "5": case "6": case "7": case "8": case "9":
-            const numButton = document.getElementById(`number${key}`);
+            numButton = document.getElementById(`number${key}`);
+            numButton.classList.add("highlight");
+            numberClick(key, display);
+            break;
+        case ".":
+            numButton = document.getElementById(`decimal`);
             numButton.classList.add("highlight");
             numberClick(key, display);
             break;
